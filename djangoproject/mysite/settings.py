@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # App
+    'teleubs',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +53,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEMPLATES = [
     {
@@ -74,8 +79,14 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'teleubs',
+        'USER': 'tarsis',
+        'PASSWORD': 'GxWcVd8pSvC6gFbOkcDtRnncztbYKkK7',
+        'HOST': 'dpg-d8kpu4mrnols7381092g-a.oregon-postgres.render.com', # Endereça do da plataforma Render
+        'PORT': '5432',      # Porta padrão do PostgreSQL
     }
 }
 
