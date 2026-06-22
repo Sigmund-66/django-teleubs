@@ -9,11 +9,15 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv # Importe o load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Carrega as variáveis do arquivo .env
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -82,11 +86,11 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'teleubs',
-        'USER': 'tarsis',
-        'PASSWORD': 'GxWcVd8pSvC6gFbOkcDtRnncztbYKkK7',
-        'HOST': 'dpg-d8kpu4mrnols7381092g-a.oregon-postgres.render.com', # Endereça do da plataforma Render
-        'PORT': '5432',      # Porta padrão do PostgreSQL
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOSTNAME'), # Endereça do da plataforma Render
+        'PORT': os.environ.get('DATABASE_PORT'),      # Porta padrão do PostgreSQL
     }
 }
 
