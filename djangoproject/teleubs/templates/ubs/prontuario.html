@@ -1,0 +1,65 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <h3 class="text-center mb-4">Prontuário</h3>
+
+        <div class="d-flex align-items-center mb-4">
+            <div class="border p-2 me-3" style="width: 80px; height: 80px;">
+                <span class="fs-1 d-flex justify-content-center">👤</span>
+            </div>
+            <div>
+                <h5 class="mb-1">Paciente Luciano Lima</h5>
+                <p class="text-muted mb-0">CPF: 000.000.000-00</p>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mb-0" id="prontuarioTabs">
+            <li class="nav-item">
+                <a class="nav-link text-danger" href="#">Exames</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active bg-primary text-white border-primary" href="#">Consultas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-danger" href="#">Prescrições</a>
+            </li>
+        </ul>
+
+        <div class="border border-top-0 border-primary p-0">
+            <table class="table text-center mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tipo de consulta</th>
+                        <th>Data</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Clínica</td>
+                        <td>01/05/2026</td>
+                        <td><a href="#" class="text-primary text-decoration-none">Ver mais</a></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td>Cardiológica</td>
+                        <td>03/03/2026</td>
+                        <td><a href="#" class="text-primary text-decoration-none">Ver mais</a></td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

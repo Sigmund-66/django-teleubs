@@ -1,0 +1,37 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <h3 class="mb-4">Agendar Consulta</h3>
+
+        <form method="POST" action="{% url 'agendar_consulta' %}">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label class="form-label">Médico</label>
+                <select class="form-select" name="medico_id" required>
+                    <option value="" selected disabled>Selecione um médico</option>
+                    {% for medico in medicos %}
+                        <option value="{{ medico.id }}">{{ medico }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Data da Consulta</label>
+                    <input type="date" class="form-control" name="data_consulta" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Horário</label>
+                    <input type="time" class="form-control" name="horario" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3 px-4">Agendar</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary mt-3 px-4">Voltar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

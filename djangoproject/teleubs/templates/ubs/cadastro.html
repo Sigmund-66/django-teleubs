@@ -1,0 +1,70 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <h3 class="mb-4">Cadastro de Paciente</h3>
+
+        <form method="POST" action="{% url 'cadastro_paciente' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Nome completo</label>
+                        <input type="text" class="form-control" name="nome_completo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Telefone</label>
+                            <input type="text" class="form-control" name="telefone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Celular</label>
+                            <input type="text" class="form-control" name="celular" placeholder="(84) 9****-****"
+                                required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CPF</label>
+                        <input type="text" class="form-control" name="cpf" placeholder="000.000.000-00" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">RG</label>
+                        <input type="text" class="form-control" name="rg">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Número cartão do SUS</label>
+                        <input type="text" class="form-control" name="cartao_sus" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Logradouro</label>
+                        <input type="text" class="form-control" name="logradouro" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" name="estado">
+                            <option selected>Selecione seu estado</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cidade</label>
+                        <select class="form-select" name="cidade">
+                            <option selected>Selecione sua cidade</option>
+                            <option value="Natal">Natal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3 px-4">Cadastrar-se</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

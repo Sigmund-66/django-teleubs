@@ -1,0 +1,26 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <h3 class="mb-4">Solicitar Exame</h3>
+
+        <form method="POST" action="{% url 'solicitar_exame' %}">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label class="form-label">Tipo de Exame</label>
+                <input type="text" class="form-control" name="tipo" placeholder="Ex: Hemograma completo, Raio-X" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Data do Exame (Pretendida)</label>
+                <input type="date" class="form-control" name="data_exame" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3 px-4">Solicitar</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary mt-3 px-4">Voltar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
