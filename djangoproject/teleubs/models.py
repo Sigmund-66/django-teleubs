@@ -10,6 +10,11 @@ class Paciente(models.Model):
     cartaoSUS = models.CharField(max_length=20, unique=True)
     telefone = models.CharField(max_length=15)
     endereco = models.CharField(max_length=255)
+    RG = models.IntegerField(unique=True, default=0)
+    dataNascimento = models.DateField(default=None, null=True)
+    sexo = models.CharField(max_length=1, default="")
+    nomeMae = models.CharField(max_length=100, default="")
+    nomePai = models.CharField(max_length=100, default="")
 
     def consultar_historico(self):
         pass

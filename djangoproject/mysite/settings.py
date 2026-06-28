@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
 from pathlib import Path
+# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv # Importe o load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -131,3 +132,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 LOGIN_URL = 'login_paciente'
+
+# Define o tempo de expiração da sessão em segundos (1 hora = 3600 segundos)
+SESSION_COOKIE_AGE = 3600
+
+# Desabilita o modo DEBUG na produção
+DEBUG = False
+
+# Adiciona o domínio da sua aplicação na lista deALLOWED_HOSTS
+ALLOWED_HOSTS = ["voa-nao-voa.onrender.com"]
