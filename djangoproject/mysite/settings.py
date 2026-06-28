@@ -136,8 +136,8 @@ LOGIN_URL = 'login_paciente'
 # Define o tempo de expiração da sessão em segundos (1 hora = 3600 segundos)
 SESSION_COOKIE_AGE = 3600
 
-# Desabilita o modo DEBUG na produção
-DEBUG = False
+# Desabilita o modo DEBUG na produção (Deixe True para desenvolvimento local)
+DEBUG = True
 
-# Adiciona o domínio da sua aplicação na lista deALLOWED_HOSTS
-ALLOWED_HOSTS = ["voa-nao-voa.onrender.com"]
+# Adiciona o domínio da sua aplicação na lista de ALLOWED_HOSTS
+ALLOWED_HOSTS = [os.environ.get('HOST_PRO'), os.environ.get('HOST_DEV1'), os.environ.get('HOST_DEV2')]

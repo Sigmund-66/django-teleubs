@@ -1,7 +1,7 @@
 {% extends 'ubs/base.html' %}
 
 {% block content %}
-<div class="card shadow-sm">
+<div class="card shadow-sm mb-4">
     <div class="card-body p-4">
         <h3 class="text-center mb-4">Prontuário</h3>
 
@@ -10,56 +10,106 @@
                 <span class="fs-1 d-flex justify-content-center">👤</span>
             </div>
             <div>
-                <h5 class="mb-1">Paciente Luciano Lima</h5>
-                <p class="text-muted mb-0">CPF: 000.000.000-00</p>
+                <h5 class="mb-1">Paciente {{ request.user.get_full_name|default:request.user.username }}</h5>
+                <p class="text-muted mb-0">CPF: {{ request.user.paciente.cpf }}</p>
             </div>
         </div>
 
-        <ul class="nav nav-tabs mb-0" id="prontuarioTabs">
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="#">Exames</a>
+        <ul class="nav nav-tabs mb-3" id="prontuarioTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="consultas-tab" data-bs-toggle="tab" data-bs-target="#consultas" type="button" role="tab" aria-controls="consultas" aria-selected="true">Consultas</button>
             </li>
-            <li class="nav-item">
-                <a class="nav-link active bg-primary text-white border-primary" href="#">Consultas</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="#">Prescrições</a>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="exames-tab" data-bs-toggle="tab" data-bs-target="#exames" type="button" role="tab" aria-controls="exames" aria-selected="false">Exames</button>
             </li>
         </ul>
 
-        <div class="border border-top-0 border-primary p-0">
-            <table class="table text-center mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Tipo de consulta</th>
-                        <th>Data</th>
-                        <th>Detalhes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Clínica</td>
-                        <td>01/05/2026</td>
-                        <td><a href="#" class="text-primary text-decoration-none">Ver mais</a></td>
-                    </tr>
-                    <tr class="table-success">
-                        <td>Cardiológica</td>
-                        <td>03/03/2026</td>
-                        <td><a href="#" class="text-primary text-decoration-none">Ver mais</a></td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr class="table-success">
-                        <td>&nbsp;</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="tab-content border border-top-0 p-3" id="prontuarioTabsContent">
+            <!-- Consultas Tab -->
+            <div class="tab-pane fade show active" id="consultas" role="tabpanel" aria-labelledby="consultas-tab">
+                <div class="table-responsive">
+                    <table id="tabela-consultas" class="table table-striped table-hover text-center mb-0 w-100">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Data</th>
+                                <th>Horário</th>
+                                <th>Médico</th>
+                                <th>Especialidade</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for consulta in consultas %}
+                            <tr>
+                                <td>{{ consulta.dataConsulta|date:"d/m/Y" }}</td>
+                                <td>{{ consulta.horario|time:"H:i" }}</td>
+                                <td>{{ consulta.medico.usuario.get_full_name|default:consulta.medico.usuario.username }}</td>
+                                <td>{{ consulta.medico.especialidade }}</td>
+                                <td>
+                                    {% if consulta.status == 'Agendada' %}
+                                        <span class="badge bg-primary">{{ consulta.status }}</span>
+                                    {% elif consulta.status == 'Cancelada' %}
+                                        <span class="badge bg-danger">{{ consulta.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ consulta.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Exames Tab -->
+            <div class="tab-pane fade" id="exames" role="tabpanel" aria-labelledby="exames-tab">
+                <div class="table-responsive">
+                    <table id="tabela-exames" class="table table-striped table-hover text-center mb-0 w-100">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Data do Exame</th>
+                                <th>Tipo</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exame in exames %}
+                            <tr>
+                                <td>{{ exame.dataExame|date:"d/m/Y" }}</td>
+                                <td>{{ exame.tipo }}</td>
+                                <td>{{ exame.resultado|default:"Pendente" }}</td>
+                            </tr>
+                            {% empty %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#tabela-consultas').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            },
+            "order": [[0, "desc"]] // Ordena por data decrescente
+        });
+        
+        $('#tabela-exames').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            },
+            "order": [[0, "desc"]] // Ordena por data decrescente
+        });
+    });
+</script>
 {% endblock %}
