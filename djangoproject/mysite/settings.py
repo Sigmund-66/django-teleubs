@@ -25,7 +25,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ms#ol^7ni^2kjl+-&bb50w3*ejo$l*%y&*4s69qyumgs-ij+0p'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ms#ol^7ni^2kjl+-&bb50w3*ejo$l*%y&*4s69qyumgs-ij+0p')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve arquivos estáticos em produção
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -131,13 +132,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Pasta onde collectstatic vai salvar os arquivos
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 LOGIN_URL = 'login_paciente'
 
 # Define o tempo de expiração da sessão em segundos (1 hora = 3600 segundos)
 SESSION_COOKIE_AGE = 3600
 
-# Desabilita o modo DEBUG na produção (Deixe True para desenvolvimento local)
-DEBUG = True
+# Em produção, DEBUG=False. Controlado pela variável de ambiente DEBUG no Render.
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Adiciona o domínio da sua aplicação na lista de ALLOWED_HOSTS
 ALLOWED_HOSTS = [os.environ.get('HOST_PRO'), os.environ.get('HOST_DEV1'), os.environ.get('HOST_DEV2')]
