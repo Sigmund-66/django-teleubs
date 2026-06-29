@@ -108,8 +108,10 @@ def cadastro_paciente(request):
         except Exception as e:
             messages.error(request, 'Ocorreu um erro inesperado. Tente novamente.')
             return render(request, 'ubs/cadastro.html')
+
+        messages.success(request, 'Cadastro realizado com sucesso! Faça login.')
+        return redirect('login_paciente')
         
-        return redirect('home')
         
     return render(request, 'ubs/cadastro.html')
 
