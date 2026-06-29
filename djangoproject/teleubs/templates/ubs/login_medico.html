@@ -1,0 +1,71 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5 mt-5">
+        <div class="card shadow border-0" style="border-radius: 16px; overflow: hidden;">
+            <div class="py-4 px-5 text-white text-center"
+                style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                <div class="mb-2" style="font-size: 2.5rem;">
+                    <i class="bi bi-clipboard2-pulse-fill"></i>
+                </div>
+                <h4 class="fw-bold mb-0">Acesso Médico</h4>
+                <p class="mb-0 opacity-75 small">Portal de Profissionais de Saúde</p>
+            </div>
+            <div class="card-body p-5">
+
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} rounded-3">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+
+                <form method="POST" action="{% url 'login_medico' %}">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">CPF (Apenas números)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-person-fill text-primary"></i>
+                            </span>
+                            <input id="cpf_medico" type="text" class="form-control border-start-0 ps-0" name="cpf"
+                                placeholder="Ex: 12345678900" maxlength="11" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Senha</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-lock-fill text-primary"></i>
+                            </span>
+                            <input id="senha_medico" type="password" class="form-control border-start-0 ps-0"
+                                name="password" required>
+                        </div>
+                    </div>
+
+                    <button id="btn_login_medico" type="submit" class="btn btn-primary w-100 py-2 fw-semibold"
+                        style="border-radius: 8px;">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                    </button>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <a href="{% url 'cadastro_medico' %}" class="text-decoration-none text-primary fw-semibold">
+                            <i class="bi bi-person-plus me-1"></i>Cadastrar novo médico
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <a href="{% url 'login_paciente' %}" class="text-decoration-none text-muted small">
+                            <i class="bi bi-arrow-left me-1"></i>Voltar para login do paciente
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

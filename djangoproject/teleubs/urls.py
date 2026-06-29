@@ -11,4 +11,10 @@ urlpatterns = [
     path('agendar-consulta/', views.agendar_consulta, name='agendar_consulta'),
     path('solicitar-exame/', views.solicitar_exame, name='solicitar_exame'),
     path('prontuario/', views.acessar_prontuario, name='acessar_prontuario'),
+
+    # Área do Médico
+    path('medico/login/', views.login_medico, name='login_medico'),
+    path('medico/logout/', views.logout_medico, name='logout_medico'),
+    path('medico/cadastro/', views.cadastro_medico, name='cadastro_medico'),
+    path('medico/home/', views.home_medico, name='home_medico'),
 ]

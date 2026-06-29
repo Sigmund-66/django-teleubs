@@ -1,0 +1,110 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm border-0" style="border-radius: 16px; overflow: hidden;">
+    <div class="py-4 px-5 text-white" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-person-badge-fill fs-2"></i>
+            <div>
+                <h4 class="fw-bold mb-0">Cadastro de Médico</h4>
+                <p class="mb-0 opacity-75 small">Preencha os dados para criar seu acesso profissional</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} rounded-3">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'cadastro_medico' %}">
+            {% csrf_token %}
+            <div class="row g-4">
+
+                <!-- Coluna Esquerda -->
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">
+                        <i class="bi bi-person-fill me-1"></i>Dados Pessoais
+                    </h6>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nome completo</label>
+                        <input id="nome_medico" type="text" class="form-control" name="nome_completo"
+                            placeholder="Dr(a). Nome Sobrenome" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">E-mail</label>
+                        <input id="email_medico" type="email" class="form-control" name="email"
+                            placeholder="email@hospital.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">CPF (Apenas números)</label>
+                        <input id="cpf_cadastro_medico" type="text" class="form-control" name="cpf"
+                            placeholder="00000000000" maxlength="11" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Senha</label>
+                            <input id="senha_cadastro_medico" type="password" class="form-control"
+                                name="password" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Confirmar Senha</label>
+                            <input id="confirmar_senha_medico" type="password" class="form-control"
+                                name="confirm_password" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita -->
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">
+                        <i class="bi bi-hospital-fill me-1"></i>Dados Profissionais
+                    </h6>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">CRM</label>
+                        <input id="crm_medico" type="text" class="form-control" name="crm"
+                            placeholder="Ex: CRM/RN 00000" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Especialidade</label>
+                        <select id="especialidade_medico" class="form-select" name="especialidade" required>
+                            <option value="" disabled selected>Selecione a especialidade</option>
+                            <option value="Clínico Geral">Clínico Geral</option>
+                            <option value="Cardiologia">Cardiologia</option>
+                            <option value="Dermatologia">Dermatologia</option>
+                            <option value="Endocrinologia">Endocrinologia</option>
+                            <option value="Ginecologia">Ginecologia</option>
+                            <option value="Neurologia">Neurologia</option>
+                            <option value="Oftalmologia">Oftalmologia</option>
+                            <option value="Ortopedia">Ortopedia</option>
+                            <option value="Pediatria">Pediatria</option>
+                            <option value="Psiquiatria">Psiquiatria</option>
+                            <option value="Urologia">Urologia</option>
+                            <option value="Outra">Outra</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 mt-3">
+                <button id="btn_cadastrar_medico" type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
+                    <i class="bi bi-person-check-fill me-2"></i>Cadastrar Médico
+                </button>
+                <a href="{% url 'login_medico' %}" class="btn btn-outline-secondary px-4 py-2">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

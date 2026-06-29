@@ -2,20 +2,27 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6 mt-5">
-        <div class="card shadow-sm">
+    <div class="col-md-5 mt-5">
+        <div class="card shadow border-0" style="border-radius: 16px; overflow: hidden;">
+            <div class="py-4 px-5 text-white text-center"
+                style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                <div class="mb-2" style="font-size: 2.5rem;">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <h4 class="fw-bold mb-0">Área do Paciente</h4>
+                <p class="mb-0 opacity-75 small">TeleUBS - Sistema de Telessaúde</p>
+            </div>
             <div class="card-body p-5">
-                <h3 class="mb-4 text-center">Login do Paciente</h3>
 
                 {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} text-danger">{{ message }}</div>
+                {% endfor %}
                 {% endif %}
 
                 <form method="POST" action="{% url 'login_paciente' %}">
                     {% csrf_token %}
-                    
+
                     <div class="mb-3">
                         <label class="form-label">CPF (Apenas números)</label>
                         <input type="text" class="form-control" name="cpf" placeholder="Ex: 12345678900" required>
@@ -27,13 +34,18 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 mt-3 px-4">Entrar</button>
-                    
+
                     <div class="text-center mt-3">
-                        <a href="{% url 'cadastro_paciente' %}" class="text-decoration-none">Ainda não tem conta? Cadastre-se</a>
+                        <a href="{% url 'cadastro_paciente' %}" class="text-decoration-none">Ainda não tem conta?
+                            Cadastre-se</a>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'login_medico' %}" class="text-decoration-none text-muted small">Entrar como
+                            médico</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

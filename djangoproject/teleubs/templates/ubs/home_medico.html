@@ -1,0 +1,161 @@
+{% extends 'ubs/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar do Médico -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px; overflow: hidden;">
+            <div class="py-4 px-3 text-white text-center" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                <div class="bg-white bg-opacity-25 rounded-circle d-inline-flex justify-content-center align-items-center mb-2"
+                    style="width: 64px; height: 64px;">
+                    <span class="fs-2 text-white"><i class="bi bi-person-badge-fill"></i></span>
+                </div>
+                <h6 class="fw-bold mb-0 text-truncate px-2">{{ request.user.first_name }}</h6>
+                <small class="opacity-75">{{ medico.especialidade }}</small>
+            </div>
+            <div class="card-body p-3">
+                <p class="text-muted small text-center mb-2">
+                    <i class="bi bi-clipboard2-pulse me-1"></i>{{ medico.crm }}
+                </p>
+                <a href="{% url 'logout_medico' %}" class="btn btn-outline-danger btn-sm w-100">
+                    <i class="bi bi-box-arrow-right me-1"></i>Sair
+                </a>
+            </div>
+            <div class="list-group list-group-flush border-top">
+                <a href="{% url 'home_medico' %}"
+                    class="list-group-item list-group-item-action fw-semibold"
+                    style="background-color: #e7f1ff; color: #0d6efd;">
+                    <i class="bi bi-house-fill me-2"></i>Meu Painel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área Principal -->
+    <div class="col-md-9">
+
+        <!-- Cabeçalho de boas-vindas -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; background: linear-gradient(135deg, #e7f1ff 0%, #f0f7ff 100%);">
+            <div class="card-body p-4 d-flex align-items-center gap-3">
+                <div style="font-size: 3rem;"><i class="bi bi-emoji-smile text-primary"></i></div>
+                <div>
+                    <h4 class="fw-bold mb-0">Olá, Dr(a). {{ request.user.first_name }}!</h4>
+                    <p class="text-muted mb-0">Bem-vindo ao seu painel de consultas — {{ hoje }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards de Resumo -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+                    <div class="fs-1 text-primary mb-1"><i class="bi bi-calendar-check-fill"></i></div>
+                    <h3 class="fw-bold mb-0">{{ total_consultas }}</h3>
+                    <small class="text-muted">Total de Consultas</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+                    <div class="fs-1 text-warning mb-1"><i class="bi bi-hourglass-split"></i></div>
+                    <h3 class="fw-bold mb-0">{{ consultas_agendadas }}</h3>
+                    <small class="text-muted">Agendadas</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm text-center py-3" style="border-radius: 12px;">
+                    <div class="fs-1 text-success mb-1"><i class="bi bi-check-circle-fill"></i></div>
+                    <h3 class="fw-bold mb-0">{{ consultas_realizadas }}</h3>
+                    <small class="text-muted">Realizadas</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dados do Médico -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold border-bottom pb-2 mb-3">
+                    <i class="bi bi-person-lines-fill text-primary me-2"></i>Meus Dados Profissionais
+                </h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <span class="text-muted d-block small">Nome</span>
+                        <strong>{{ request.user.first_name }}</strong>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <span class="text-muted d-block small">E-mail</span>
+                        <strong>{{ request.user.email }}</strong>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <span class="text-muted d-block small">CPF</span>
+                        <strong>{{ cpf_mascarado }}</strong>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <span class="text-muted d-block small">CRM</span>
+                        <strong>{{ medico.crm }}</strong>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <span class="text-muted d-block small">Especialidade</span>
+                        <strong>{{ medico.especialidade }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Consultas -->
+        <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold border-bottom pb-2 mb-3">
+                    <i class="bi bi-calendar2-week-fill text-primary me-2"></i>Minhas Consultas
+                </h5>
+
+                {% if consultas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="bi bi-person me-1"></i>Paciente</th>
+                                    <th><i class="bi bi-calendar me-1"></i>Data</th>
+                                    <th><i class="bi bi-clock me-1"></i>Horário</th>
+                                    <th><i class="bi bi-info-circle me-1"></i>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consulta in consultas %}
+                                <tr>
+                                    <td class="fw-semibold">{{ consulta.paciente.usuario.first_name }}</td>
+                                    <td>{{ consulta.dataConsulta|date:"d/m/Y" }}</td>
+                                    <td>{{ consulta.horario|time:"H:i" }}</td>
+                                    <td>
+                                        {% if consulta.status == "Agendada" %}
+                                            <span class="badge rounded-pill text-bg-warning">
+                                                <i class="bi bi-hourglass-split me-1"></i>{{ consulta.status }}
+                                            </span>
+                                        {% elif consulta.status == "Realizada" %}
+                                            <span class="badge rounded-pill text-bg-success">
+                                                <i class="bi bi-check-circle me-1"></i>{{ consulta.status }}
+                                            </span>
+                                        {% elif consulta.status == "Cancelada" %}
+                                            <span class="badge rounded-pill text-bg-danger">
+                                                <i class="bi bi-x-circle me-1"></i>{{ consulta.status }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge rounded-pill text-bg-secondary">{{ consulta.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                        <p class="mb-0">Nenhuma consulta vinculada ainda.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
