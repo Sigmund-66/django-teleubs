@@ -7,7 +7,7 @@
 
         <div class="d-flex align-items-center mb-4">
             <div class="border p-2 me-3" style="width: 80px; height: 80px;">
-                <span class="fs-1 d-flex justify-content-center">👤</span>
+                <span class="fs-1 d-flex justify-content-center"><i class="bi bi-person-fill"></i></span>
             </div>
             <div>
                 <h5 class="mb-1">Paciente {{ request.user.get_full_name|default:request.user.username }}</h5>
@@ -17,10 +17,12 @@
 
         <ul class="nav nav-tabs mb-3" id="prontuarioTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="consultas-tab" data-bs-toggle="tab" data-bs-target="#consultas" type="button" role="tab" aria-controls="consultas" aria-selected="true">Consultas</button>
+                <button class="nav-link active" id="consultas-tab" data-bs-toggle="tab" data-bs-target="#consultas"
+                    type="button" role="tab" aria-controls="consultas" aria-selected="true">Consultas</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="exames-tab" data-bs-toggle="tab" data-bs-target="#exames" type="button" role="tab" aria-controls="exames" aria-selected="false">Exames</button>
+                <button class="nav-link" id="exames-tab" data-bs-toggle="tab" data-bs-target="#exames" type="button"
+                    role="tab" aria-controls="exames" aria-selected="false">Exames</button>
             </li>
         </ul>
 
@@ -43,19 +45,23 @@
                             <tr>
                                 <td>{{ consulta.dataConsulta|date:"d/m/Y" }}</td>
                                 <td>{{ consulta.horario|time:"H:i" }}</td>
-                                <td>{{ consulta.medico.usuario.get_full_name|default:consulta.medico.usuario.username }}</td>
+                                <td>{{ consulta.medico.usuario.get_full_name|default:consulta.medico.usuario.username }}
+                                </td>
                                 <td>{{ consulta.medico.especialidade }}</td>
                                 <td>
                                     {% if consulta.status == 'Agendada' %}
-                                        <span class="badge bg-primary">{{ consulta.status }}</span>
+                                    <span class="badge bg-primary">{{ consulta.status }}</span>
                                     {% elif consulta.status == 'Cancelada' %}
-                                        <span class="badge bg-danger">{{ consulta.status }}</span>
+                                    <span class="badge bg-danger">{{ consulta.status }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ consulta.status }}</span>
+                                    <span class="badge bg-secondary">{{ consulta.status }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">Nenhuma consulta agendada.</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -69,6 +75,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>Data do Exame</th>
+                                <th>Horário</th>
                                 <th>Tipo</th>
                                 <th>Resultado</th>
                             </tr>
@@ -77,10 +84,14 @@
                             {% for exame in exames %}
                             <tr>
                                 <td>{{ exame.dataExame|date:"d/m/Y" }}</td>
+                                <td>{{ exame.horarioExame|time:"H:i" }}</td>
                                 <td>{{ exame.tipo }}</td>
                                 <td>{{ exame.resultado|default:"Pendente" }}</td>
                             </tr>
                             {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">Nenhum exame solicitado.</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -96,14 +107,14 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#tabela-consultas').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
             },
             "order": [[0, "desc"]] // Ordena por data decrescente
         });
-        
+
         $('#tabela-exames').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"

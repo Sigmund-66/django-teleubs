@@ -7,15 +7,29 @@
 
         <form method="POST" action="{% url 'solicitar_exame' %}">
             {% csrf_token %}
-            
+
             <div class="mb-3">
                 <label class="form-label">Tipo de Exame</label>
-                <input type="text" class="form-control" name="tipo" placeholder="Ex: Hemograma completo, Raio-X" required>
+                <input type="text" class="form-control" name="tipo" placeholder="Ex: Hemograma completo, Raio-X"
+                    required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Data do Exame (Pretendida)</label>
-                <input type="date" class="form-control" name="data_exame" required>
+                <input type="date" class="form-control" name="data_exame" id="data_input" required>
+                <div class="form-text text-muted small">
+                    <strong>Regras:</strong> Apenas dias úteis (seg-sex) deste ano, a partir de amanhã.
+                </div>
+                <div class="invalid-feedback" id="data_error"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Horário do Exame</label>
+                <input type="time" class="form-control" name="horario_exame" id="horario_input" required>
+                <div class="form-text text-muted small">
+                    <strong>Regras:</strong> Apenas horários exatos ou meias horas (ex: 14:00, 14:30).
+                </div>
+                <div class="invalid-feedback" id="horario_error"></div>
             </div>
 
             <button type="submit" class="btn btn-primary mt-3 px-4">Solicitar</button>
@@ -23,4 +37,55 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dataInput = document.getElementById('data_input');
+    const horarioInput = document.getElementById('horario_input');
+    
+    // Configura min e max para a data
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Formata para YYYY-MM-DD
+    const minDateStr = tomorrow.toISOString().split('T')[0];
+    const maxDateStr = today.getFullYear() + '-12-31';
+    
+    dataInput.setAttribute('min', minDateStr);
+    dataInput.setAttribute('max', maxDateStr);
+    
+    // Validação de final de semana
+    dataInput.addEventListener('change', function() {
+        if (!this.value) return;
+        
+        // Pega a data ignorando timezone local (para evitar pular de dia)
+        const parts = this.value.split('-');
+        const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+        const day = dateObj.getDay();
+        
+        if (day === 0 || day === 6) { // 0 = Domingo, 6 = Sábado
+            this.classList.add('is-invalid');
+            document.getElementById('data_error').innerText = 'Sábados e domingos não são permitidos.';
+            this.value = '';
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validação de horário (00 ou 30)
+    horarioInput.addEventListener('change', function() {
+        if (!this.value) return;
+        
+        const minutes = this.value.split(':')[1];
+        if (minutes !== '00' && minutes !== '30') {
+            this.classList.add('is-invalid');
+            document.getElementById('horario_error').innerText = 'O horário deve terminar em 00 ou 30 minutos.';
+            this.value = '';
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+});
+</script>
 {% endblock %}

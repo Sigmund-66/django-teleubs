@@ -50,6 +50,7 @@ class Exame(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     tipo = models.CharField(max_length=100)
     dataExame = models.DateField()
+    horarioExame = models.TimeField(null=True, default=None)
     resultado = models.TextField(blank=True, null=True)
 
     def solicitar(self):

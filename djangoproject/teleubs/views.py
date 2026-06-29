@@ -127,11 +127,13 @@ def solicitar_exame(request):
     if request.method == "POST":
         tipo = request.POST.get('tipo')
         data_exame = request.POST.get('data_exame')
+        horario_exame = request.POST.get('horario_exame')
         
         Exame.objects.create(
             paciente=request.user.paciente,
             tipo=tipo,
             dataExame=data_exame,
+            horarioExame=horario_exame,
             resultado="Pendente"
         )
         return redirect('home')
@@ -144,7 +146,10 @@ def acessar_prontuario(request):
     paciente = request.user.paciente
     consultas = Consulta.objects.filter(paciente=paciente)
     exames = Exame.objects.filter(paciente=paciente)
-    prontuario = Prontuario.objects.get(paciente=paciente)
+    prontuario, created = Prontuario.objects.get_or_create(
+        paciente=paciente,
+        defaults={'historicoClinico': 'Prontuário criado automaticamente.'}
+    )
     
     context = {
         'consultas': consultas,
