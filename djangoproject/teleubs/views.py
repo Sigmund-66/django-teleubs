@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db import DatabaseError, transaction
 from .models import Paciente, Consulta, Exame, Prontuario, Medico
 
 # Create your views here.
@@ -69,31 +70,43 @@ def cadastro_paciente(request):
         if password != confirm_password:
             messages.error(request, 'As senhas não coincidem.')
             return render(request, 'ubs/cadastro.html')
+        
+        try:
+            # Verificar se CPF já está cadastrado
+            if User.objects.filter(username=cpf).exists():
+                messages.error(request, 'Este CPF já está cadastrado.')
+                return render(request, 'ubs/cadastro.html')
             
-        # Verificar se CPF já está cadastrado
-        if User.objects.filter(username=cpf).exists():
-            messages.error(request, 'Este CPF já está cadastrado.')
+            with transaction.atomic():
+                # Cria o usuário Django (o método create_user criptografa a senha automaticamente usando hash seguro/PBKDF2)
+                usuario = User.objects.create_user(username=cpf, email=email, password=password, first_name=nome_completo)
+                
+                # Cria o paciente
+                paciente = Paciente.objects.create(
+                    usuario=usuario,
+                    cpf=cpf,
+                    cartaoSUS=cartao_sus,
+                    telefone=telefone,
+                    endereco=logradouro,
+                    RG=int(rg) if rg else 0,
+                    dataNascimento=data_nascimento if data_nascimento else None,
+                    sexo=sexo if sexo else "",
+                    nomeMae=nome_mae if nome_mae else "",
+                    nomePai=nome_pai if nome_pai else ""
+                )
+                
+                # Cria o prontuário do paciente recém-cadastrado
+                Prontuario.objects.create(paciente=paciente, historicoClinico="Prontuário criado.")
+                
+        except DatabaseError as e:
+            messages.error(request, 'Erro ao salvar os dados no banco de dados. Tente novamente.')
             return render(request, 'ubs/cadastro.html')
-            
-        # Cria o usuário Django (o método create_user criptografa a senha automaticamente usando hash seguro/PBKDF2)
-        usuario = User.objects.create_user(username=cpf, email=email, password=password, first_name=nome_completo)
-        
-        # Cria o paciente
-        paciente = Paciente.objects.create(
-            usuario=usuario,
-            cpf=cpf,
-            cartaoSUS=cartao_sus,
-            telefone=telefone,
-            endereco=logradouro,
-            RG=int(rg) if rg else 0,
-            dataNascimento=data_nascimento if data_nascimento else None,
-            sexo=sexo if sexo else "",
-            nomeMae=nome_mae if nome_mae else "",
-            nomePai=nome_pai if nome_pai else ""
-        )
-        
-        # Cria o prontuário do paciente recém-cadastrado
-        Prontuario.objects.create(paciente=paciente, historicoClinico="Prontuário criado.")
+        except ValueError as e:
+            messages.error(request, f'Dados inválidos: {e}')
+            return render(request, 'ubs/cadastro.html')
+        except Exception as e:
+            messages.error(request, 'Ocorreu um erro inesperado. Tente novamente.')
+            return render(request, 'ubs/cadastro.html')
         
         return redirect('home')
         
@@ -102,21 +115,41 @@ def cadastro_paciente(request):
 @login_required
 def agendar_consulta(request):
     # Lógica para agendamento (EU2 - Agendar consulta) [cite: 22]
-    medicos = Medico.objects.all()
+    try:
+        medicos = Medico.objects.all()
+    except DatabaseError:
+        messages.error(request, 'Erro ao carregar a lista de médicos. Tente novamente.')
+        return redirect('home')
+    
     if request.method == "POST":
         medico_id = request.POST.get('medico_id')
         data_consulta = request.POST.get('data_consulta')
         horario = request.POST.get('horario')
         
-        medico = Medico.objects.get(id=medico_id)
+        try:
+            medico = Medico.objects.get(id=medico_id)
+        except Medico.DoesNotExist:
+            messages.error(request, 'Médico não encontrado. Por favor, selecione um médico válido.')
+            return render(request, 'ubs/agendar_consulta.html', {'medicos': medicos})
+        except DatabaseError:
+            messages.error(request, 'Erro ao buscar informações do médico. Tente novamente.')
+            return render(request, 'ubs/agendar_consulta.html', {'medicos': medicos})
         
-        Consulta.objects.create(
-            paciente=request.user.paciente,
-            medico=medico,
-            dataConsulta=data_consulta,
-            horario=horario,
-            status="Agendada"
-        )
+        try:
+            Consulta.objects.create(
+                paciente=request.user.paciente,
+                medico=medico,
+                dataConsulta=data_consulta,
+                horario=horario,
+                status="Agendada"
+            )
+        except DatabaseError:
+            messages.error(request, 'Erro ao agendar a consulta. Tente novamente.')
+            return render(request, 'ubs/agendar_consulta.html', {'medicos': medicos})
+        except Exception:
+            messages.error(request, 'Ocorreu um erro inesperado ao agendar a consulta.')
+            return render(request, 'ubs/agendar_consulta.html', {'medicos': medicos})
+        
         return redirect('home')
         
     return render(request, 'ubs/agendar_consulta.html', {'medicos': medicos})
@@ -129,13 +162,21 @@ def solicitar_exame(request):
         data_exame = request.POST.get('data_exame')
         horario_exame = request.POST.get('horario_exame')
         
-        Exame.objects.create(
-            paciente=request.user.paciente,
-            tipo=tipo,
-            dataExame=data_exame,
-            horarioExame=horario_exame,
-            resultado="Pendente"
-        )
+        try:
+            Exame.objects.create(
+                paciente=request.user.paciente,
+                tipo=tipo,
+                dataExame=data_exame,
+                horarioExame=horario_exame,
+                resultado="Pendente"
+            )
+        except DatabaseError:
+            messages.error(request, 'Erro ao solicitar o exame. Tente novamente.')
+            return render(request, 'ubs/solicitar_exame.html')
+        except Exception:
+            messages.error(request, 'Ocorreu um erro inesperado ao solicitar o exame.')
+            return render(request, 'ubs/solicitar_exame.html')
+        
         return redirect('home')
         
     return render(request, 'ubs/solicitar_exame.html')
@@ -144,12 +185,20 @@ def solicitar_exame(request):
 def acessar_prontuario(request):
     # Lógica para consultar histórico (EU3 - Acessar prontuário) [cite: 22]
     paciente = request.user.paciente
-    consultas = Consulta.objects.filter(paciente=paciente)
-    exames = Exame.objects.filter(paciente=paciente)
-    prontuario, created = Prontuario.objects.get_or_create(
-        paciente=paciente,
-        defaults={'historicoClinico': 'Prontuário criado automaticamente.'}
-    )
+    
+    try:
+        consultas = Consulta.objects.filter(paciente=paciente)
+        exames = Exame.objects.filter(paciente=paciente)
+        prontuario, created = Prontuario.objects.get_or_create(
+            paciente=paciente,
+            defaults={'historicoClinico': 'Prontuário criado automaticamente.'}
+        )
+    except DatabaseError:
+        messages.error(request, 'Erro ao carregar o prontuário. Tente novamente.')
+        return redirect('home')
+    except Exception:
+        messages.error(request, 'Ocorreu um erro inesperado ao acessar o prontuário.')
+        return redirect('home')
     
     context = {
         'consultas': consultas,
